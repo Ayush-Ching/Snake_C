@@ -21,7 +21,7 @@ char scoreStr[32];
 bool isRunning = true;
 
 const Color bg         = { 20,  30,  50, 255};
-const Color snakeHead  = {190, 145, 105, 255};
+const Color snakeHead  = {100, 145, 195, 255};
 const Color snakeWhite = {190, 195, 205, 255};
 const Color snakeGrey  = {145, 150, 165, 255};
 const Color foodColor  = {160, 190, 140, 255};
@@ -39,6 +39,7 @@ bool collideSegment(Vector2 self);
 void processInput();
 void update();
 void drawGameOver();
+void restartGame();
 
 int main(int argc, char* argv[]) {
     initGame();
@@ -52,8 +53,6 @@ int main(int argc, char* argv[]) {
 
         draw();
     }
-
-	printf("\nquit in main\n\n");
 
     quitGame();
 
@@ -103,32 +102,31 @@ bool collideSegment(Vector2 self) {
 }
 
 void processInput() {
-	if (IsKeyPressed(KEY_ESCAPE)) {
-		printf("\nescape pressed\n\n");
-		isRunning = false;
-
-		quitGame();
-	}
-
-	if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) {
-		if(dir.y == 1) return;
+	if ((IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) && (dir.y == 0)) {
 		dir.x =  0;
 		dir.y = -1;
 	}
-	else if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_LEFT)) {
-		if(dir.x == 1) return;
+	else if ((IsKeyPressed(KEY_A) || IsKeyPressed(KEY_LEFT)) && (dir.x == 0)) {
 		dir.x = -1;
 		dir.y =  0;
 	}
-	else if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) {
-		if(dir.y == -1) return;
+	else if ((IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) && (dir.y == 0)) {
 		dir.x =  0;
 		dir.y =  1;
 	}
-	else if (IsKeyPressed(KEY_D) || IsKeyPressed(KEY_RIGHT)) {
-		if(dir.x == -1) return;
+	else if ((IsKeyPressed(KEY_D) || IsKeyPressed(KEY_RIGHT)) && (dir.x == 0)) {
 		dir.x =  1;
 		dir.y =  0;
+	}
+
+	if(!isRunning && IsKeyPressed(KEY_SPACE)) {
+		restartGame();
+	}
+
+	if (IsKeyPressed(KEY_ESCAPE)) {
+		isRunning = false;
+
+		quitGame();
 	}
 }
 
@@ -158,7 +156,6 @@ void update() {
 }
 
 void quitGame() {
-	printf("quitGame called...\n");
     CloseWindow();
 }
 
@@ -190,6 +187,28 @@ void draw() {
 
 void drawGameOver() {
 	char gameOverMessage[32];
-	sprintf(gameOverMessage, "GAME OVER!\nFinal Score : %d", score);
-	DrawText(gameOverMessage, 80, 300, 80, textOrange);
+	sprintf(gameOverMessage, " GAME OVER!\nFinal Score : %d", score);
+	int mesWidth = MeasureText(gameOverMessage, 80);
+	int mesMid = (SCREEN_WIDTH - mesWidth) / 2;
+	DrawText(gameOverMessage, mesMid, 300, 80, textOrange);
+
+	char* restartText = "Press Space to Try Again";
+	int resWidth = MeasureText(restartText, 30);
+	int resMid = (SCREEN_WIDTH - resWidth) / 2;
+	DrawText(restartText, resMid, 470, 30, textBlue);
+
+	char* quitText = "Press Escape to Quit";
+	int quitWidth = MeasureText(quitText, 30);
+	int quitMid = (SCREEN_WIDTH - quitWidth) / 2;
+	DrawText(quitText, quitMid, 520, 30, textBlue);
+}
+
+void restartGame() {
+	head.x    = 0;
+	head.y    = 0;
+	dir.x     = 1;
+	dir.y     = 0;
+	score     = 0;
+	food      = spawnFood();
+	isRunning = true;
 }
