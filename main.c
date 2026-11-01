@@ -23,10 +23,9 @@ bool gameStarted = false;
 int  fps         = 10;
 
 const Color bg         = { 20,  30,  50, 255};
-const Color snakeHead  = {100, 145, 195, 255};
-const Color snakeWhite = {190, 195, 205, 255};
-const Color snakeGrey  = {145, 150, 165, 255};
-const Color foodColor  = {160, 190, 140, 255};
+const Color snakeWhite = {120, 165, 225, 255};
+const Color snakeGrey  = { 45,  70, 125, 255};
+const Color foodColor  = {165, 225, 120, 255};
 const Color textDark   = { 75,  85, 105, 255};
 const Color textOrange = {210, 135, 110, 255};
 const Color textGreen  = {150, 200, 195, 255};
@@ -177,7 +176,7 @@ void draw() {
 
 	DrawRectangle(food.x * widthByGrid, food.y * heightByGrid, widthByGrid, heightByGrid, foodColor);
 
-	DrawRectangle(head.x * widthByGrid, head.y * heightByGrid, widthByGrid, heightByGrid, snakeHead);
+	DrawRectangle(head.x * widthByGrid, head.y * heightByGrid, widthByGrid, heightByGrid, snakeWhite);
 
 	for(int i=0; i<score; i++) {
 		if(i % 2 == 0){
