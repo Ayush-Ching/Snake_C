@@ -5,8 +5,11 @@
 
 #define GRID_SIZE 25
 #define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
+#define SCREEN_HEIGHT 800
 #define MAX_SCORE 256
+
+int widthByGrid  = SCREEN_WIDTH / GRID_SIZE;
+int heightByGrid = SCREEN_HEIGHT / GRID_SIZE;
 
 Vector2 head;
 Vector2 dir;
@@ -17,13 +20,14 @@ int score = 0;
 char scoreStr[32];
 bool isRunning = true;
 
-const Color bg         = {220, 230, 250, 255};
-const Color snakeRed   = {190, 100, 105, 255};
-const Color snakeBlack = { 45,  50,  65, 255};
+const Color bg         = { 20,  30,  50, 255};
+const Color snakeHead  = {190, 145, 105, 255};
+const Color snakeWhite = {190, 195, 205, 255};
+const Color snakeGrey  = {145, 150, 165, 255};
 const Color foodColor  = {160, 190, 140, 255};
 const Color textDark   = { 75,  85, 105, 255};
 const Color textOrange = {210, 135, 110, 255};
-const Color textGreen  = {140, 190, 185, 255};
+const Color textGreen  = {150, 200, 195, 255};
 const Color textBlue   = { 90, 130, 170, 255};
 
 void initGame();
@@ -34,6 +38,7 @@ bool collide(Vector2 a, Vector2 b);
 bool collideSegment(Vector2 self);
 void processInput();
 void update();
+void drawGameOver();
 
 int main(int argc, char* argv[]) {
     initGame();
@@ -110,20 +115,17 @@ void processInput() {
 		dir.x =  0;
 		dir.y = -1;
 	}
-
-	if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) {
-		if(dir.y == -1) return;
-		dir.x =  0;
-		dir.y =  1;
-	}
-
-	if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_LEFT)) {
+	else if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_LEFT)) {
 		if(dir.x == 1) return;
 		dir.x = -1;
 		dir.y =  0;
 	}
-
-	if (IsKeyPressed(KEY_D) || IsKeyPressed(KEY_RIGHT)) {
+	else if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) {
+		if(dir.y == -1) return;
+		dir.x =  0;
+		dir.y =  1;
+	}
+	else if (IsKeyPressed(KEY_D) || IsKeyPressed(KEY_RIGHT)) {
 		if(dir.x == -1) return;
 		dir.x =  1;
 		dir.y =  0;
@@ -165,7 +167,29 @@ void draw() {
 
     ClearBackground(bg);
 
-    DrawText("Hello, snake", 240, 270, 60, textGreen);
+	DrawRectangle(food.x * widthByGrid, food.y * heightByGrid, widthByGrid, heightByGrid, foodColor);
+
+	DrawRectangle(head.x * widthByGrid, head.y * heightByGrid, widthByGrid, heightByGrid, snakeHead);
+
+	for(int i=0; i<score; i++) {
+		if(i % 2 == 0){
+			DrawRectangle(segments[i].x * widthByGrid, segments[i].y * heightByGrid, widthByGrid, heightByGrid, snakeGrey);
+		} else {
+			DrawRectangle(segments[i].x * widthByGrid, segments[i].y * heightByGrid, widthByGrid, heightByGrid, snakeWhite);
+		}
+	}
+
+	DrawText(scoreStr, 10, 10, 30, textGreen);
+
+	if(!isRunning) {
+		drawGameOver();
+	}
 
     EndDrawing();
+}
+
+void drawGameOver() {
+	char gameOverMessage[32];
+	sprintf(gameOverMessage, "GAME OVER!\nFinal Score : %d", score);
+	DrawText(gameOverMessage, 80, 300, 80, textOrange);
 }
