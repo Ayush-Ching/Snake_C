@@ -16,9 +16,11 @@ Vector2 dir;
 Vector2 food;
 Vector2 segments[MAX_SCORE - 1];
 
-int score = 0;
 char scoreStr[32];
-bool isRunning = true;
+int  score       = 0;
+bool isRunning   = true;
+bool gameStarted = false;
+int  fps         = 10;
 
 const Color bg         = { 20,  30,  50, 255};
 const Color snakeHead  = {100, 145, 195, 255};
@@ -40,18 +42,23 @@ void processInput();
 void update();
 void drawGameOver();
 void restartGame();
+void startScreen();
 
 int main(int argc, char* argv[]) {
+	fps = argc > 1 ? atoi(argv[1]) : 10;
+
     initGame();
 
     while(!WindowShouldClose()) {
 		processInput();
 
-		if (isRunning) {
+		if (!gameStarted) {
+			startScreen();
+		} else if (isRunning) {
 			update();
 		}
 
-        draw();
+        if(gameStarted) draw();
     }
 
     quitGame();
@@ -64,7 +71,7 @@ void initGame() {
 	srand(time(&t));
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Snake");
 
-	SetTargetFPS(10);
+	SetTargetFPS(fps);
 
 	sprintf(scoreStr, "SCORE : %d", score);
 
@@ -121,6 +128,10 @@ void processInput() {
 
 	if(!isRunning && IsKeyPressed(KEY_SPACE)) {
 		restartGame();
+	}
+
+	if(IsKeyPressed(KEY_ENTER)) {
+		gameStarted = true;
 	}
 
 	if (IsKeyPressed(KEY_ESCAPE)) {
@@ -211,4 +222,34 @@ void restartGame() {
 	score     = 0;
 	food      = spawnFood();
 	isRunning = true;
+
+	sprintf(scoreStr, "SCORE : %d", score);
+}
+
+void startScreen() {
+	BeginDrawing();
+	
+    ClearBackground(bg);
+
+	char* titleText = "___SNAKE___";
+	int titleWidth = MeasureText(titleText, 120);
+	int titleMid = (SCREEN_WIDTH - titleWidth) / 2;
+	DrawText(titleText, titleMid, 120, 120, textGreen);
+
+	char* startText = "Press ENTER to start";
+	int startWidth = MeasureText(startText, 50);
+	int startMid = (SCREEN_WIDTH - startWidth) / 2;
+	DrawText(startText, startMid, 300, 50, textBlue);
+
+	char* quitText = "Press Escape to Quit";
+	int quitWidth = MeasureText(quitText, 40);
+	int quitMid = (SCREEN_WIDTH - quitWidth) / 2;
+	DrawText(quitText, quitMid, 360, 40, textOrange);
+
+	char* helpText = "Use WASD or arrows to move";
+	int helpWidth = MeasureText(helpText, 30);
+	int helpMid = (SCREEN_WIDTH - helpWidth) / 2;
+	DrawText(helpText, helpMid, 420, 30, textBlue);
+
+	EndDrawing();
 }
