@@ -1,4 +1,7 @@
+#include <stdio.h>
 #include <raylib.h>
+#include <time.h>
+#include <stdlib.h>
 
 #define GRID_SIZE 25
 #define SCREEN_WIDTH 800
@@ -26,6 +29,9 @@ const Color textBlue   = { 90, 130, 170, 255};
 void initGame();
 void quitGame();
 void draw();
+Vector2 spawnFood();
+bool collide(Vector2 a, Vector2 b);
+bool collideSegment(Vector2 self);
 
 int main(int argc, char* argv[]) {
     initGame();
@@ -40,7 +46,43 @@ int main(int argc, char* argv[]) {
 }
 
 void initGame() {
+	time_t t;
+	srand(time(&t));
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Snake");
+
+	SetTargetFPS(10);
+
+	sprintf(scoreStr, "SCORE : %d", score);
+
+	head.x = 0;
+	head.y = 0;
+	dir.x  = 1;
+	dir.y  = 0;
+
+	food = spawnFood();
+}
+
+Vector2 spawnFood() {
+	Vector2 snack = {1 + rand() % (GRID_SIZE - 2), 1 + rand() % (GRID_SIZE - 2)};
+
+	while(collide(head, snack) || collideSegment(snack)) {
+		snack.x = 1 + rand() % (GRID_SIZE - 2);
+		snack.y = 1 + rand() % (GRID_SIZE - 2);
+	}
+
+	return snack;
+}
+
+bool collide(Vector2 a, Vector2 b) {
+	return (a.x == b.x && a.y == b.y);
+}
+
+bool collideSegment(Vector2 self) {
+	for(int i=0; i < score; i++) {
+		if(collide(self, segments[i])) return true;
+	}
+
+	return false;
 }
 
 void quitGame() {

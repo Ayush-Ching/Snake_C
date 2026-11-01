@@ -4,7 +4,7 @@ SRC     = $(wildcard *.c)
 OBJ     = $(SRC:%.c=$(BUILD)/%.o)
 DEP     = $(OBJ:.o=.d)
 
-CFLAGS  = -Wall -Wextra -std=c99 -O2 -MMD -MP
+CFLAGS  = -Wall -Wextra -std=c23 -O2 -MMD -MP
 LDFLAGS =
 
 # Use `make DEBUG=1` for a debug build
