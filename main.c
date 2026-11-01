@@ -32,13 +32,23 @@ void draw();
 Vector2 spawnFood();
 bool collide(Vector2 a, Vector2 b);
 bool collideSegment(Vector2 self);
+void processInput();
+void update();
 
 int main(int argc, char* argv[]) {
     initGame();
 
     while(!WindowShouldClose()) {
+		processInput();
+
+		if (isRunning) {
+			update();
+		}
+
         draw();
     }
+
+	printf("\nquit in main\n\n");
 
     quitGame();
 
@@ -60,6 +70,8 @@ void initGame() {
 	dir.y  = 0;
 
 	food = spawnFood();
+
+	isRunning = true;
 }
 
 Vector2 spawnFood() {
@@ -85,7 +97,66 @@ bool collideSegment(Vector2 self) {
 	return false;
 }
 
+void processInput() {
+	if (IsKeyPressed(KEY_ESCAPE)) {
+		printf("\nescape pressed\n\n");
+		isRunning = false;
+
+		quitGame();
+	}
+
+	if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP)) {
+		if(dir.y == 1) return;
+		dir.x =  0;
+		dir.y = -1;
+	}
+
+	if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN)) {
+		if(dir.y == -1) return;
+		dir.x =  0;
+		dir.y =  1;
+	}
+
+	if (IsKeyPressed(KEY_A) || IsKeyPressed(KEY_LEFT)) {
+		if(dir.x == 1) return;
+		dir.x = -1;
+		dir.y =  0;
+	}
+
+	if (IsKeyPressed(KEY_D) || IsKeyPressed(KEY_RIGHT)) {
+		if(dir.x == -1) return;
+		dir.x =  1;
+		dir.y =  0;
+	}
+}
+
+void update() {
+	for(int i=score; i>0; i--) {
+		segments[i] = segments[i - 1];
+	}
+
+	segments[0] = head;
+
+	head.x += dir.x;
+	head.y += dir.y;
+
+	if(collideSegment(head) || head.x < 0 || head.y < 0 || head.x >= GRID_SIZE || head.y >= GRID_SIZE) {
+		isRunning = false;
+	}
+
+	if(collide(head, food)) {
+		if(score < MAX_SCORE) {
+			score++;
+			sprintf(scoreStr, "SCORE : %d", score);
+			food = spawnFood();
+		} else {
+			sprintf(scoreStr, "YOU WIN!!!");
+		}
+	}
+}
+
 void quitGame() {
+	printf("quitGame called...\n");
     CloseWindow();
 }
 
