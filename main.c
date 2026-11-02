@@ -23,6 +23,7 @@ bool gameStarted = false;
 int  fps         = 10;
 
 const Color bg         = { 20,  30,  50, 255};
+const Color wallColor  = {220, 230, 250, 255};
 const Color snakeHead  = {225, 165, 120, 255};
 const Color snakeLight = {120, 165, 225, 255};
 const Color snakeDark  = { 45,  70, 125, 255};
@@ -75,8 +76,8 @@ void initGame() {
 
 	sprintf(scoreStr, "SCORE : %d", score);
 
-	head.x = 0;
-	head.y = 0;
+	head.x = 1;
+	head.y = 13;
 	dir.x  = 1;
 	dir.y  = 0;
 
@@ -151,7 +152,7 @@ void update() {
 	head.x += dir.x;
 	head.y += dir.y;
 
-	if(collideSegment(head) || head.x < 0 || head.y < 0 || head.x >= GRID_SIZE || head.y >= GRID_SIZE) {
+	if(collideSegment(head) || head.x < 1 || head.y < 1 || head.x >= GRID_SIZE - 1 || head.y >= GRID_SIZE - 1) {
 		isRunning = false;
 	}
 
@@ -175,6 +176,14 @@ void draw() {
 
     ClearBackground(bg);
 
+	for(int i=0; i<GRID_SIZE; i++) {
+		for(int j=0; j<GRID_SIZE; j++) {
+			if(i == 0 || i == GRID_SIZE - 1 || j == 0 || j == GRID_SIZE - 1) {
+				DrawRectangle(i * widthByGrid, j * heightByGrid, widthByGrid, heightByGrid, wallColor);
+			}
+		}
+	}
+
 	DrawRectangle(food.x * widthByGrid, food.y * heightByGrid, widthByGrid, heightByGrid, foodColor);
 
 	for(int i=0; i<score; i++) {
@@ -187,7 +196,7 @@ void draw() {
 
 	DrawRectangle(head.x * widthByGrid, head.y * heightByGrid, widthByGrid, heightByGrid, snakeHead);
 
-	DrawText(scoreStr, 10, 10, 30, textGreen);
+	DrawText(scoreStr, 5, 5, 30, textBlue);
 
 	if(!isRunning) {
 		drawGameOver();
@@ -215,8 +224,8 @@ void drawGameOver() {
 }
 
 void restartGame() {
-	head.x    = 0;
-	head.y    = 0;
+	head.x    = 1;
+	head.y    = 13;
 	dir.x     = 1;
 	dir.y     = 0;
 	score     = 0;
