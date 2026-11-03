@@ -187,7 +187,7 @@ void draw() {
 	DrawRectangle(food.x * widthByGrid, food.y * heightByGrid, widthByGrid, heightByGrid, foodColor);
 
 	for(int i=0; i<score; i++) {
-		if(i % 2 == 0){
+		if(((int)segments[i].x + (int)segments[i].y) % 2 == 0){
 			DrawRectangle(segments[i].x * widthByGrid, segments[i].y * heightByGrid, widthByGrid, heightByGrid, snakeDark);
 		} else {
 			DrawRectangle(segments[i].x * widthByGrid, segments[i].y * heightByGrid, widthByGrid, heightByGrid, snakeLight);
